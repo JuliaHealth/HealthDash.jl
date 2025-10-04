@@ -1,0 +1,29 @@
+# Ignore Julia artifacts
+/.julia/
+/.cache/
+/Manifest.toml
+
+# Ignore logs and temp
+/log/
+*.log
+
+# Ignore OS files
+Thumbs.db
+.DS_Store
+
+# Ignore editor files
+.vscode/
+.idea/
+*.swp
+.theme
+
+# Ignore build artifacts
+/*.so
+/*.dll
+/*.dylib
+
+# Ignore system-specific
+desktop.ini
+
+# Keep Project.toml but ignore local variations
+# (Project.toml is typically committed for package projects)
