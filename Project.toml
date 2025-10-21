@@ -1,5 +1,6 @@
 name = "HealthDash"
-uuid = "517c2230-ce2a-4999-9724-3dc2979a75a3"
+uuid = "6f3ddfe2-4dd4-4bc9-a460-dc226a640b54"
+authors = ["Kosuri Indu <kosurilindu@gmail.com>"]
 version = "0.1.0"
 
 [deps]
