@@ -1,0 +1,37 @@
+/* public/css/navbar.css
+   Styles for the HealthDash navbar (Stipple UI) */
+
+.hd-navbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+  z-index: 100;
+}
+
+.hd-logo {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #0f172a;
+}
+
+.nav-btn {
+  color: #0f172a;
+  text-transform: none;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.nav-btn:hover,
+.nav-btn.q-btn:hover {
+  background: rgba(15,23,42,0.04);
+  cursor: pointer;
+}
+
+.q-ml-sm { margin-left: 8px !important; }

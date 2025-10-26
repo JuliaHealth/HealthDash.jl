@@ -1,12 +1,17 @@
 module HealthDash
 
 using Stipple, Stipple.ReactiveTools
+using StippleUI
+
+include(joinpath(@__DIR__, "components", "Navbar.jl"))
+include(joinpath(@__DIR__, "pages", "Home.jl"))
 using Dates
 HTTP::Module = Genie.HTTPUtils.HTTP
 
-import Stipple: hget
+import Stipple: opts, hget
 import Genie.Router.Route
 import Genie.Generator.Logging
+import Genie.Assets.asset_path
 import Genie.Server.openbrowser
 import Genie.Util: @wait
 
@@ -55,10 +60,30 @@ end
 
 t_startup::DateTime = DateTime(0)
 
-home::Route = route("/") do
-    return "Welcome to HealthDash.jl"
+@app MyApp begin
+    @in x = 1.0
+    @in search = ""
+    @in storage = 0.26
+
+    @onchange isready begin
+        global t_startup
+        if t_startup != DateTime(0)
+            @info "Startup time: $(now() - t_startup)"
+            t_startup = DateTime(0)
+        end
+    end
 end
 
+local_material_fonts() = (stylesheet("/iconsets/material/font/material.css"),)
+
+ui() = UI
+
+home_route::Route = route("/") do
+    core_theme = false
+    global model = @init(MyApp; core_theme)
+
+    page(model, home; core_theme) |> html
+end
 # -----------  app init -------------
 
 function __init__()
@@ -68,10 +93,37 @@ function __init__()
     Genie.Loader.loadenv(; context = @__MODULE__)
     up()
 
-    println("Welcome to HealthDash.jl")
-    route(home)
+    add_css(local_material_fonts)
+
+    route(home_route)
     "openbrowser" ∈ ARGS && openbrowser()
     # @wait, interferes with GenieSession, needs to be placed outside __init__
+end
+
+# -----------  precompilation -------------
+
+import Stipple: Genie.Assets.asset_path
+
+@stipple_precompile begin
+    println("Precompiling app...")
+    context = @__MODULE__
+    Genie.config.path_build = @project_path "build"
+    let showbanner = parse(Bool, get!(ENV, "GENIE_BANNER", "true"))
+        ENV["GENIE_BANNER"] = false
+        Genie.Loader.loadenv(; context)
+        ENV["GENIE_BANNER"] = showbanner
+    end
+
+    @init(MyApp; core_theme = false)
+    route(home_route)
+    channel = get_channel(precompile_get("/").body |> String)
+    precompile_get(asset_path(MyApp))
+    precompile_get(asset_path(StippleUI.assets_config, :css, file = "quasar.prod"))
+    println("""
+        Precompiling WebSocket connection...
+        Please ignore a potential timeout warning!
+    """)
+    ws_send(; port, channel)
 end
 
 end # module
