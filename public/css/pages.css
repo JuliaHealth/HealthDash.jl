@@ -1,0 +1,24 @@
+/* Shared styles for page content */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.GPL__page-container {
+  padding: 16px;
+}
+
+.text-h3 {
+  margin-bottom: 8px;
+}
+
+.text-subtitle2 {
+  color: #4a4a4a;
+  font-size: 1rem;
+}
+
+/* Small responsive tweaks */
+@media (min-width: 1024px) {
+  .GPL__page-container { padding: 24px; }
+}

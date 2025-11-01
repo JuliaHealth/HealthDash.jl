@@ -1,11 +1,12 @@
 using StippleUI
-export home
+export home_page
 
-function home()
+function home_page()
     return [
         navbar(),
-        row([ cell(h1("HealthDash")) ]),
-        row([ cell(p("Welcome to HealthDash — available modules:")) ]),
-        row([ cell(ul([ li("Module A"), li("Module B") ])) ])
+        htmldiv(class="q-pa-md", [
+            h2("Home"),
+            p("Welcome to HealthDash.")
+        ])
     ]
 end

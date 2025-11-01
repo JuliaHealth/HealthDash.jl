@@ -1,10 +1,27 @@
 module HealthDash
 
+# load the Genie environment first so that all other modules can be properly initialized
+module GenieEnvLoader
+    using Genie, Dates
+    t_startup::DateTime = DateTime(0)
+        
+    function __init__()
+        global t_startup = now()
+        cd(@project_path)
+        Genie.config.path_build = @project_path "build"
+        Genie.Loader.loadenv(; context = @__MODULE__)
+        up()
+    end
+end
+
+import .GenieEnvLoader.t_startup
+
+using Stipple.ModelStorage.Sessions.GenieSession
 using Stipple, Stipple.ReactiveTools
 using StippleUI
-
 include(joinpath(@__DIR__, "components", "Navbar.jl"))
 include(joinpath(@__DIR__, "pages", "Home.jl"))
+include(joinpath(@__DIR__, "pages", "About.jl"))
 using Dates
 HTTP::Module = Genie.HTTPUtils.HTTP
 
@@ -17,49 +34,6 @@ import Genie.Util: @wait
 
 export openbrowser, @wait
 
-function get_channel(s::String)
-    match(r"\(\) => window.create[^']+'([^']+)'", s).captures[1]
-end
-
-function get_channel(::Nothing)
-    @warn "No channel found in the HTML, using default channel '/'"
-    "____"
-end
-
-global websocket::Union{Nothing, HTTP.WebSockets.WebSocket} = nothing
-
-function ws_send(messages = String[], payloads::Array{<:AbstractDict} = fill(Dict());
-    verbose::Bool = true,
-    host::String = "localhost",
-    port::Int = Genie.config.server_port,
-    channel = get_channel(hget("/"))
-)
-    pushfirst!(messages, "subscribe")
-    push!(messages, "unsubscribe")
-    if payloads isa Vector
-        pushfirst!(payloads, Dict())
-        push!(payloads, Dict())
-    end
-    HTTP.WebSockets.open("ws://$host:$port") do ws
-        messages = Dict.("channel" => channel, "message" .=> messages, "payload" .=> payloads)
-        for msg in messages
-            HTTP.WebSockets.send(ws, json(msg))
-        end
-
-        for msg in ws
-            verbose && println("Received: $msg")
-            if msg == "Unsubscription: OK" || contains(msg, "ERROR")
-                sleep(0.1)
-                close(ws)
-                break
-            end
-        end
-    end
-    nothing
-end
-
-t_startup::DateTime = DateTime(0)
-
 @app MyApp begin
     @in x = 1.0
     @in search = ""
@@ -68,36 +42,133 @@ t_startup::DateTime = DateTime(0)
     @onchange isready begin
         global t_startup
         if t_startup != DateTime(0)
+            println()
+            @info "Serving from $(pwd())"
             @info "Startup time: $(now() - t_startup)"
             t_startup = DateTime(0)
         end
     end
+
+    @onchange x begin
+        global hh
+        println(x)
+        y = parse(Int, "0" * GenieSession.get(hh, :hh)[4:end]) + 1
+        GenieSession.persist(GenieSession.set!(hh, :hh, "hh_$y"))
+    end
 end
+
+UI::Vector{Genie.Renderer.Html.ParsedHTMLString} = [
+    home_page()
+]
+
+Stipple.client_data(::MyApp) = client_data(
+    leftDrawerOpen = false,
+    links1 = [
+        opts(icon = "photo", text = "Photos"),
+        opts(icon = "photo_album", text = "Albums"),
+        opts(icon = "assistant", text = "Assistant"),
+        opts(icon = "people", text = "Sharing"),
+        opts(icon = "book", text = "Photo books")
+    ],
+    links2 = [
+        opts(icon = "archive", text = "Archive"),
+        opts(icon = "delete", text = "Trash")
+    ],
+    links3 = [
+        opts(icon = "settings", text = "Settings"),
+        opts(icon = "help", text = "Help"),
+        opts(icon = "get_app", text = "App Downloads")
+    ],
+    createMenu = [
+        opts(icon = "photo_album", text = "Album"),
+        opts(icon = "people", text = "Shared"),
+        opts(icon = "movie", text = "Movie"),
+        opts(icon = "library_books", text = "Animation"),
+        opts(icon = "dashboard", text = "Collage"),
+        opts(icon = "book", text = "Photo books")
+    ]
+)
 
 local_material_fonts() = (stylesheet("/iconsets/material/font/material.css"),)
+navbar_css() = (stylesheet("/css/navbar.css"),)
+pages_css() = (stylesheet("/css/pages.css"),)
 
+# adcss(googlefonts_css)
+add_css(local_material_fonts)
 ui() = UI
 
-home_route::Route = route("/") do
+home::Route = route("/") do
+    global hh = session()
     core_theme = false
     global model = @init(MyApp; core_theme)
-
-    page(model, home; core_theme) |> html
+    GenieSession.set!(session(), :hh, "hh")
+    page(model, ui; core_theme) |> html
 end
+
+gpl_css() = [style("""
+.GPL__toolbar {
+  height: 64px;
+}
+
+.GPL__toolbar-input {
+  width: 35%;
+}
+
+.GPL__drawer-item {
+  line-height: 24px;
+  border-radius: 0 24px 24px 0;
+  margin-right: 12px;
+}
+
+.GPL__drawer-item .q-item__section--avatar {
+  padding-left: 12px;
+}
+
+.GPL__drawer-item .q-item__section--avatar .q-icon {
+  color: #5f6368;
+}
+
+.GPL__drawer-item .q-item__label:not(.q-item__label--caption) {
+  color: #3c4043;
+  letter-spacing: .01785714em;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+.GPL__drawer-item--storage {
+  border-radius: 0;
+  margin-right: 0;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.GPL__side-btn__label {
+  font-size: 12px;
+  line-height: 24px;
+  letter-spacing: .01785714em;
+  font-weight: 500;
+}
+
+@media (min-width: 1024px) {
+  .GPL__page-container {
+    padding-left: 94px;
+  }
+}""")
+]
+
 # -----------  app init -------------
 
 function __init__()
-    global t_startup = now()
-    cd(@project_path)
-    Genie.config.path_build = @project_path "build"
-    Genie.Loader.loadenv(; context = @__MODULE__)
-    up()
-
+    add_css(gpl_css)
     add_css(local_material_fonts)
+    add_css(navbar_css)
+    add_css(pages_css)
 
-    route(home_route)
+    route(home)
+
     "openbrowser" ∈ ARGS && openbrowser()
-    # @wait, interferes with GenieSession, needs to be placed outside __init__
+    @wait # seemed to interfere with GenieSession, but couldn't be reproduced with the latest version
 end
 
 # -----------  precompilation -------------
@@ -115,15 +186,12 @@ import Stipple: Genie.Assets.asset_path
     end
 
     @init(MyApp; core_theme = false)
-    route(home_route)
-    channel = get_channel(precompile_get("/").body |> String)
+    route(home)
+    # this has to be called in order to initialize the assets
+    precompile_get("/")
+    # now we can call the assetfile
     precompile_get(asset_path(MyApp))
     precompile_get(asset_path(StippleUI.assets_config, :css, file = "quasar.prod"))
-    println("""
-        Precompiling WebSocket connection...
-        Please ignore a potential timeout warning!
-    """)
-    ws_send(; port, channel)
 end
 
 end # module

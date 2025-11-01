@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  healthdash:
+    build: .
+    image: healthdash   # 👈 sets image name explicitly
+    container_name: healthdash
+    ports:
+      - "8000:8000"

@@ -4,7 +4,6 @@
 .vscode
 .theme
 .CondaPkg/
-log
 dev/
 build/
 test/build
