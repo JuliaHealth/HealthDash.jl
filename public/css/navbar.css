@@ -35,17 +35,25 @@
 	font-size: 1.05rem;
 	text-transform: none;
 	background: transparent;
+	text-decoration: none;
 	border: none;
 	padding: 6px 10px;
 }
-.nav-link:hover { color: #1f2937; text-decoration: underline; }
 
-.action-btn .q-icon, .action-btn .q-btn__content {
+.nav-link:hover {
+	color: #0b4fef;
+	background: rgba(11,79,239,0.06);
+	border-radius: 6px;
+	text-decoration: none;
+}
+
+.action-btn .q-icon,
+.action-btn .q-btn__content {
 	color: #374151;
 	font-size: 1.125rem;
 }
 
-.action-btn img { 
+.action-btn img {
 	width: 26px;
 	height: 26px;
 	display: inline-block;
@@ -56,17 +64,37 @@
 	height: 30px;
 }
 
-.center-github img { width: 22px; height: 22px; display: inline-block; }
-
-@media (max-width: 768px) {
-	.nav-links { display: none; }
-	.center-github img { width: 18px; height: 18px; }
+.center-github img {
+	width: 22px;
+	height: 22px;
+	display: inline-block;
 }
 
 @media (max-width: 768px) {
-	.hd-navbar-inner { padding: 0.5rem 1rem; }
-	.nav-links { display: none; }
-	.hd-logo { font-size: 1.125rem; }
-	.nav-btn { font-size: 0.95rem; }
-	.action-btn img { width: 20px; height: 20px; }
+	.nav-links {
+		display: none;
+	}
+	.center-github img {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+@media (max-width: 768px) {
+	.hd-navbar-inner {
+		padding: 0.5rem 1rem;
+	}
+	.nav-links {
+		display: none;
+	}
+	.hd-logo {
+		font-size: 1.125rem;
+	}
+	.nav-btn {
+		font-size: 0.95rem;
+	}
+	.action-btn img {
+		width: 20px;
+		height: 20px;
+	}
 }

@@ -1,24 +1,137 @@
-/* Shared styles for page content */
 html, body {
   height: 100%;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #0f172a;
 }
 
-.GPL__page-container {
+.page-container {
+  max-width: 80rem;
+  margin: 0 auto;
   padding: 16px;
+  padding-bottom: 4rem;
+  box-sizing: border-box;
+  background: #ffffff;
 }
 
-.text-h3 {
-  margin-bottom: 8px;
+.hero {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 3rem 2.25rem;
+  min-height: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.text-subtitle2 {
-  color: #4a4a4a;
-  font-size: 1rem;
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
 }
 
-/* Small responsive tweaks */
-@media (min-width: 1024px) {
-  .GPL__page-container { padding: 24px; }
+.hero p {
+  font-size: 1.125rem;
+  color: #475569;
+  margin: 0;
+  max-width: 60ch;
+}
+
+.hero {
+  justify-content: center;
+  text-align: center;
+}
+
+.hero .column {
+  align-items: center;
+}
+
+.service-card {
+  border-radius: 0.7rem;
+  overflow: hidden;
+  box-shadow: 0 0.6rem 1.8rem rgba(15,23,42,0.06);
+  display: flex;
+  padding: 1.5rem;
+  flex-direction: column;
+  background: #fff;
+  width: 24rem;
+  aspect-ratio: 4 / 3;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card .q-card__section {
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.service-card h4 {
+  font-size: 1.9rem;
+  margin: 0 0 0.125rem 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+.service-card p {
+  font-size: 1.125rem;
+  margin: 0;
+  color: #475569;
+  text-align: center;
+}
+
+.health-dot {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 880px) {
+  .service-card {
+    width: 48% !important;
+  }
+  .hero {
+    min-height: 18rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .service-card {
+    width: 100% !important;
+    aspect-ratio: auto !important;
+  }
+  .page-container {
+    padding: 0.75rem;
+  }
+  .hero {
+    padding: 1.5rem;
+    min-height: 25rem;
+  }
+}
+
+.page-container > h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.services-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+  padding-bottom: 0.25rem;
+}
+
+.services-row .service-card {
+  flex: 0 1 24rem;
 }
