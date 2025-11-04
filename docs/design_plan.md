@@ -20,8 +20,8 @@ Pages
 
 - Landing `/` - shows all the current available modules
 - Dashboard `/dashboard` - dashboard with functionality
-- About `/about` - about the page, juliahealth and links
-Pages themselves could be made reusable so contributors can add additional pages if needed.
+- Docs `/docs` - documentation, about the page, juliahealth and links
+  Pages themselves could be made reusable so contributors can add additional pages if needed.
 
 Core components
 
@@ -33,7 +33,7 @@ Core components
 - Visualizations
 - Microservice functionality
 - Preview Tables...etc
-  
+
 Components like Visualizations or CohortSelector can work directly with standardized data formats (such as HealthTable) to make modules interoperable.
 
 ### Data sources
@@ -45,15 +45,15 @@ Support 2 simple ingestion modes (for now).
    - Ship a small set of example datasets (e.g. Eunomia)
    - Appear in the DatasetChooser as "built‑in" items and can be activated immediately
    - Note: HealthSampleData.jl will also be registered soon, which helps with preloaded datasets.
+
 2. Database uploader / connector
    - Allow users to upload a database / connect maybe ?!
      - Supported examples: DuckDB, SQLite (and optionally Postgres or other SQL sources).
    - Modes:
      - Upload mode: directly upload the db
      - Query mode: for connect based (not sure how to navigate for this yet)
-       
      Note: databases can be large, so efficient handling is important.
-   - Considerations: 
+   - Considerations:
      - Databases can be large, so uploading may not always work; connection mode may be needed.
      - For complex queries or analytics, it may be better to preprocess statistics externally and just visualize them in the dashboard.
      - We can leverage DBInterface.jl since much of the tooling is built around FunSQL.jl, which helps with connecting/querying databases efficiently.
@@ -85,23 +85,23 @@ The backend will run as part of the dashboard itself. Internal routes like /api/
 
 #### /api/datasets (Dataset Lifecycle)
 
-* `GET /api/datasets` - List all datasets and show which one is active.
-* `POST /api/datasets` - Upload or connect to a dataset (CSV, Parquet, DuckDB, SQLite).
-* `GET /api/datasets/:id/preview` - Preview sample rows and schema.
-* `POST /api/datasets/:id/activate` - Mark a dataset as active for the current session.
-* `DELETE /api/datasets/:id` - (Optional) Remove uploaded dataset from storage.
+- `GET /api/datasets` - List all datasets and show which one is active.
+- `POST /api/datasets` - Upload or connect to a dataset (CSV, Parquet, DuckDB, SQLite).
+- `GET /api/datasets/:id/preview` - Preview sample rows and schema.
+- `POST /api/datasets/:id/activate` - Mark a dataset as active for the current session.
+- `DELETE /api/datasets/:id` - (Optional) Remove uploaded dataset from storage.
 
 #### /api/cohorts (Cohort Lifecycle)
 
-* `GET /api/cohorts/detect` - Check if the active dataset contains any cohort tables.
-* `POST /api/cohorts/ephemeral` - Create a quick in-memory (inline filter) cohort.
-* `POST /api/cohorts/create_temp` - Generate a temporary cohort table for reuse in the session.
-* `POST /api/cohorts/use` - Select an existing cohort definition from the dataset.
+- `GET /api/cohorts/detect` - Check if the active dataset contains any cohort tables.
+- `POST /api/cohorts/ephemeral` - Create a quick in-memory (inline filter) cohort.
+- `POST /api/cohorts/create_temp` - Generate a temporary cohort table for reuse in the session.
+- `POST /api/cohorts/use` - Select an existing cohort definition from the dataset.
 
 #### /api/modules (Module Discovery + Execution)
 
-* `GET /api/modules` - Return list of available modules with brief descriptions and required inputs.
-* `POST /api/modules/run` - Run a chosen module on the active dataset (and cohort, if any). Returns results or job info.
+- `GET /api/modules` - Return list of available modules with brief descriptions and required inputs.
+- `POST /api/modules/run` - Run a chosen module on the active dataset (and cohort, if any). Returns results or job info.
 
 Internal APIs allow modular handling of datasets, cohorts and modules, keeping the dashboard flexible and organized.
 

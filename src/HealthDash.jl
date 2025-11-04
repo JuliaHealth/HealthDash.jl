@@ -25,7 +25,7 @@ HTTP::Module = Genie.HTTPUtils.HTTP
 include(joinpath(@__DIR__, "components", "Navbar.jl"))
 include(joinpath(@__DIR__, "data", "services.jl"))
 include(joinpath(@__DIR__, "pages", "Home.jl"))
-include(joinpath(@__DIR__, "pages", "About.jl"))
+include(joinpath(@__DIR__, "pages", "Docs.jl"))
 include(joinpath(@__DIR__, "pages", "Dashboard.jl"))
 import Stipple: opts, hget
 import Genie.Router.Route
@@ -282,12 +282,12 @@ home::Route = route("/") do
     page(model, ui; core_theme) |> html
 end
 
-about::Route = route("/about") do
+docs::Route = route("/docs") do
   global hh = session()
   core_theme = false
   global model = @init(MyApp; core_theme)
   GenieSession.set!(session(), :hh, "hh")
-  page(model, about_page(); core_theme) |> html
+  page(model, docs_page(); core_theme) |> html
 end
 
 dashboard::Route = route("/dashboard") do
@@ -359,7 +359,7 @@ function __init__()
     add_css(pages_css)
 
     route(home)
-    route(about)
+    route(docs)
     route(dashboard)
 
     "openbrowser" ∈ ARGS && openbrowser()

@@ -43,6 +43,100 @@ html, body {
   text-align: center;
 }
 
+
+.about-intro {
+  max-width: 80ch;
+  margin: 0 auto 1rem auto;
+  color: #334155;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.about-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.about-cards .service-card {
+  flex: 0 1 22rem;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.about-col h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  color: #0f172a;
+}
+
+.about-col p {
+  margin: 0 0 1rem 0;
+  color: #334155;
+}
+
+@media (max-width: 880px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.docs-page {
+  padding: 5rem 0;
+  font-size: 1.125rem; 
+  color: #0f172a;
+}
+
+.docs-page h1.text-h3 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.docs-page h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.docs-page p {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #263241;
+}
+
+.docs-page ol, .docs-page ul {
+  font-size: 1.0625rem;
+  margin-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.page-container h1.text-h3 {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.page-container p {
+  color: #334155;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.repo-link {
+  color: #0b4fef;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.repo-link:hover { text-decoration: underline; }
 .hero .column {
   align-items: center;
 }
