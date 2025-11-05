@@ -40,6 +40,7 @@ export openbrowser, @wait
     @in x = 1.0
     @in search = ""
     @in storage = 0.26
+  @in selected_service = ""
 
     @onchange isready begin
         global t_startup

@@ -2,25 +2,35 @@ function dashboard_page()
 	return [
 		navbar(),
 		htmldiv(class="page-container q-pa-md", [
+
+			h1("Dashboard", class = "text-h3"),
 			row([ 
-				cell(class="col-3 sidebar", [
-					h3("Core components"),
-					ul([
-						li("SidePanel / Sidebar"),
-						li("DatasetUploader / DatasetChooser"),
-						li("CohortBuilder / CohortSelector"),
-						li("Service Selector"),
-						li("Visualizations"),
-						li("Preview Tables")
-					])
-				]),
-				cell(class="col dashboard-main", [
-					h1("Dashboard UI"),
-					p("This area will host the interactive dashboard tools. For now it's a visual scaffold showing the main components."),
-					row(@gutter :md [
-						card([ cardsection([ h4("Dataset"), p("Uploader / chooser UI goes here") ]) ]),
-						card([ cardsection([ h4("Cohort Builder"), p("Filters and cohort creation UI") ]) ])
-					])
+				cell(class="col-3 sidebar q-pa-md panel-border", [
+					h4("Select service"),
+					select(:selected_service,
+						options = [ opts(value = s.id, label = s.title) for s in SERVICES ],
+						optionlabel = :label,
+						optionvalue = :value,
+						label = "Choose a service",
+						filled = "",
+						useinput = false,
+						clearable = false,
+						dropdownicon = "arrow_drop_down",
+						style = "width:100%",
+						class = "q-mb-md"
+					),
+
+			  h4("Service options"),
+			  p("Additional parameters (AP) will appear here."),
+			  htmldiv(class="q-mb-lg"),
+
+			 
+			  row([ cell(class = "col-6", btn("Run", color = "primary", style = "width:100%")),
+				  cell(class = "col-6", btn("Reset", flat = "", style = "width:100%"))
+			  ]),
+			]),
+
+			cell(class="col dashboard-main q-pa-md panel-border dashboard-right", [
 				])
 			])
 		])
