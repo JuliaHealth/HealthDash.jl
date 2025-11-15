@@ -14,6 +14,10 @@ html, body {
   background: #ffffff;
 }
 
+.dashboard-container{
+  max-width: 90rem !important;
+}
+
 .hero {
   background: #ffffff;
   border-radius: 1rem;
@@ -207,21 +211,6 @@ html, body {
   }
 }
 
-.services-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: 0.5rem;
-  padding-bottom: 0.25rem;
-}
-
-.services-row .service-card {
-  flex: 0 1 24rem;
-}
-
-/* Dashboard */
 .dashboard-intro {
   background: #ffffff;
   border-radius: 0.75rem;
@@ -310,4 +299,15 @@ html, body {
 
 .dashboard-right {
   min-height: 36rem;
+}
+
+.section-title{
+  font-size: 2.25rem;
+  margin: 0 0 0.25rem 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-subtitle2{
+  font-weight: 700;
 }

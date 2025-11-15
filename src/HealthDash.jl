@@ -19,6 +19,10 @@ import .GenieEnvLoader.t_startup
 using Stipple.ModelStorage.Sessions.GenieSession
 using Stipple, Stipple.ReactiveTools
 using StippleUI
+using DBInterface
+import DBInterface: connect, close!, execute
+using DuckDB
+using DataFrames
 using Dates
 HTTP::Module = Genie.HTTPUtils.HTTP
 
@@ -28,6 +32,7 @@ include(joinpath(@__DIR__, "pages", "Home.jl"))
 include(joinpath(@__DIR__, "pages", "Docs.jl"))
 include(joinpath(@__DIR__, "pages", "Dashboard.jl"))
 import Stipple: opts, hget
+import Genie.Renderer.Html: select
 import Genie.Router.Route
 import Genie.Generator.Logging
 import Genie.Assets.asset_path
@@ -58,7 +63,6 @@ export openbrowser, @wait
         y = parse(Int, "0" * GenieSession.get(hh, :hh)[4:end]) + 1
         GenieSession.persist(GenieSession.set!(hh, :hh, "hh_$y"))
     end
-end
 
 # function myheader()
 #     header(elevated = "", class = "bg-white text-grey-8", var"height-hint" = "64", 
