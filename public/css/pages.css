@@ -1,3 +1,10 @@
+.services-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -18,48 +25,25 @@ html, body {
   max-width: 90rem !important;
 }
 
-.hero {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 3rem 2.25rem;
-  min-height: 28rem;
+.dashboard-shell {
+  max-width: 100%;
+}
+
+.dashboard-frame {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  min-height: calc(100vh - 80px);
+  background: #fff;
+  border-left: 1px solid #e6eef8;
+  overflow: hidden;
 }
 
-.hero h1 {
-  font-size: 3rem;
-  font-weight: 800;
-  margin: 0 0 0.5rem 0;
-}
-
-.hero p {
-  font-size: 1.125rem;
-  color: #475569;
-  margin: 0;
-  max-width: 60ch;
-}
-
-.about-intro {
-  max-width: 80ch;
-  margin: 0 auto 1rem auto;
-  color: #334155;
-  font-size: 1.0625rem;
-  line-height: 1.6;
-}
-
-.about-cards {
+.dashboard-rail {
+  width: 20rem;
+  border-right: 1px solid #e6eef8;
+  background: #fff;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: flex-start;
-  align-items: stretch;
-}
-
-.about-cards .service-card {
-  flex: 0 1 22rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .about-grid {
@@ -155,11 +139,11 @@ html, body {
   overflow: hidden;
   box-shadow: 0 0.6rem 1.8rem rgba(15,23,42,0.06);
   display: flex;
-  padding: 1.5rem;
+  padding: 1.1rem;
   flex-direction: column;
   background: #fff;
-  width: 24rem;
-  aspect-ratio: 4 / 3;
+  width: 16rem;
+  height: 11rem;
   align-items: center;
   justify-content: center;
 }
@@ -173,14 +157,14 @@ html, body {
 }
 
 .service-card h4 {
-  font-size: 1.9rem;
+  font-size: 1.25rem;
   margin: 0 0 0.125rem 0;
   font-weight: 700;
   text-align: center;
 }
 
 .service-card p {
-  font-size: 1.125rem;
+  font-size: 0.95rem;
   margin: 0;
   color: #475569;
   text-align: center;
@@ -203,11 +187,6 @@ html, body {
 
   .page-container {
     padding: 0.75rem;
-  }
-
-  .hero {
-    padding: 1.5rem;
-    min-height: 25rem;
   }
 }
 
@@ -279,6 +258,16 @@ html, body {
 @media (max-width: 880px) {
   .dashboard-main-panels {
     flex-direction: column;
+  }
+
+  .dashboard-frame {
+    flex-direction: column;
+  }
+
+  .dashboard-rail {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e6eef8;
   }
 }
 

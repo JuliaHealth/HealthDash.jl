@@ -1,4 +1,13 @@
 function docs_page()
+	service_cards = [
+		card(class = "service-card", [
+			cardsection([
+				h4(s.title),
+				p(s.desc)
+			])
+		]) for s in SERVICES
+	]
+
 	return [
 		navbar(),
 
@@ -19,15 +28,19 @@ function docs_page()
 							li("A minimal, responsive UI that focuses on data presentation and integration."),
 							li("Extensible connectors: HealthDash can load outputs from other repos or call APIs and expose their outputs visually.")
 						]),
-					h3("Links and resources"),
+
+					h3("Available services"),
+					row(class = "q-gutter-md q-mb-lg services-row", service_cards),
+
+					h3("Service docs (auto-generated)"),
+					p("Service documentation will be generated here from each registered service’s metadata and docstrings."),
+
+					h3("How to add a service"),
 					ul([
-						li(raw"<a href='https://github.com/JuliaHealth/HealthDash.jl' target='_blank' rel='noopener'>HealthDash repository (this project)</a>"),
-						li(raw"<a href='https://github.com/JuliaHealth' target='_blank' rel='noopener'>JuliaHealth GitHub organization (community projects)</a>"),
-						li(raw"<a href='https://julialang.org' target='_blank' rel='noopener'>The Julia language</a>"),
-						li(raw"<a href='https://github.com/GenieFramework/Genie.jl' target='_blank' rel='noopener'>Genie.jl (web framework)</a>"),
-						li(raw"<a href='https://github.com/GenieFramework/Stipple.jl' target='_blank' rel='noopener'>Stipple (reactive UI library)</a>"),
-						li(raw"<a href='https://github.com/JuliaHealth/HealthDash.jl/issues' target='_blank' rel='noopener'>Issues & support (open an issue on the repo)</a>")
-					])
+						li("Create a service module/package that exposes metadata (name/description) and UI hooks."),
+						li("Register the service with HealthDash so it appears as a tab and in the available services list."),
+						li("Provide a docstring/metadata so docs can be auto-populated here.")
+					]),
 				]),
 
 				htmldiv(class="about-col", [

@@ -28,7 +28,6 @@ HTTP::Module = Genie.HTTPUtils.HTTP
 
 include(joinpath(@__DIR__, "components", "Navbar.jl"))
 include(joinpath(@__DIR__, "data", "services.jl"))
-include(joinpath(@__DIR__, "pages", "Home.jl"))
 include(joinpath(@__DIR__, "pages", "Docs.jl"))
 include(joinpath(@__DIR__, "pages", "Dashboard.jl"))
 import Stipple: opts, hget
@@ -200,43 +199,7 @@ export openbrowser, @wait
 #     )
 # end
 
-UI::Vector{Genie.Renderer.Html.ParsedHTMLString} = [
-    home_page(),
-    # StippleUI.layout(view = "lHh Lpr fff", class = "bg-grey-1", [
-        # home_page(),
-        # myheader(),
-        # mydrawer(),
-        # page_container(class = "GPL__page-container", [
-        #       leftMenu(),
-        #     htmldiv(class = "q-pt-md q-page q-layout-padding", [
-        #         htmldiv(class = "text-h3 text-blue-4", "Iconsets"),
-        #         separator(class = "q-my-md"),
-        #         row(@gutter :lg [
-        #             card([
-        #                 cardsection("Material Icons")
-        #                 cardsection(icon("home"),)
-        #             ]),
-        #             card([
-        #                 cardsection("Material Symbols Outline"),
-        #                 cardsection(icon("sym_o_home", style = R"`font-variation-settings: 'FILL' ${x}; transition: font-variation-settings 0.5s ease;`"),)
-        #             ]),
-        #             card([
-        #                 cardsection("Material Symbols Rounded"),
-        #                 cardsection(icon("sym_r_home", style = R"`font-variation-settings: 'FILL' ${x}; transition: font-variation-settings 0.5s ease;`"),)
-        #             ]),
-        #             card([
-        #                 cardsection("Material Symbols Sharp"),
-        #                 cardsection(icon("sym_s_home", style = R"`font-variation-settings: 'FILL' ${x}; transition: font-variation-settings 0.5s ease;`"),)
-        #             ]),
-        #         ]),
-
-        #         row(class = "q-mt-md",
-        #             btn("Toggle Fill", @click("this.x = 1 - this.x"))
-        #         ),
-            # ])
-        # ])
-    # ])
-]
+UI::Vector{Genie.Renderer.Html.ParsedHTMLString} = docs_page()
 
 @methods MyApp [
     :toggleLeftDrawer => js"""function () {
@@ -282,11 +245,11 @@ add_css(local_material_fonts)
 ui() = UI
 
 home::Route = route("/") do
-    global hh = session()
-    core_theme = false
-    global model = @init(MyApp; core_theme)
-    GenieSession.set!(session(), :hh, "hh")
-    page(model, ui; core_theme) |> html
+  global hh = session()
+  core_theme = false
+  global model = @init(MyApp; core_theme)
+  GenieSession.set!(session(), :hh, "hh")
+  page(model, docs_page(); core_theme) |> html
 end
 
 docs::Route = route("/docs") do
