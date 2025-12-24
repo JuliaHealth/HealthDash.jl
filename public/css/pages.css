@@ -300,3 +300,37 @@ html, body {
 .text-subtitle2{
   font-weight: 700;
 }
+
+.rail-section {
+  width: 100%;
+}
+
+.rail-item {
+  padding: 0.75rem 0;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rail-item:hover {
+  color: #0b4fef;
+}
+
+.rail-item.active {
+  color: #0b4fef;
+  font-weight: 600;
+}
+
+.rail-divider {
+  height: 1px;
+  background: #e6eef8;
+  margin: 0.5rem 0;
+  width: 100%;
+}
+
+.dashboard-content {
+  flex: 1;
+  background: #ffffff;
+  overflow-y: auto;
+}

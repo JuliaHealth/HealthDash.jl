@@ -21,12 +21,14 @@ using Stipple, Stipple.ReactiveTools
 using StippleUI
 using DBInterface
 import DBInterface: connect, close!, execute
-using DuckDB
 using DataFrames
 using Dates
 HTTP::Module = Genie.HTTPUtils.HTTP
 
 include(joinpath(@__DIR__, "components", "Navbar.jl"))
+include(joinpath(@__DIR__, "extensions", "registry.jl"))
+include(joinpath(@__DIR__, "extensions", "Vitals", "VitalsExtension.jl"))
+include(joinpath(@__DIR__, "extensions", "Labs", "LabsExtension.jl"))
 include(joinpath(@__DIR__, "data", "services.jl"))
 include(joinpath(@__DIR__, "pages", "Docs.jl"))
 include(joinpath(@__DIR__, "pages", "Dashboard.jl"))
@@ -39,12 +41,16 @@ import Genie.Server.openbrowser
 import Genie.Util: @wait
 
 export openbrowser, @wait
+register_extension(ExtensionRegistry("vitals", "Vitals Dashboard", "Quick overview of patient vitals", VitalsExtension.vitals_ui))
+register_extension(ExtensionRegistry("labs", "Labs Report", "Recent lab results summary", LabsExtension.labs_ui))
+
 
 @app MyApp begin
     @in x = 1.0
     @in search = ""
     @in storage = 0.26
   @in selected_service = ""
+  @in selected_dashboard_item = ""
 
     @onchange isready begin
         global t_startup
