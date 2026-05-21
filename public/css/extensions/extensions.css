@@ -1,0 +1,260 @@
+.ext-root {
+  width: min(100%, 1120px);
+  padding: 24px !important;
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.ext-heading {
+  margin: 0 0 4px;
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.ext-subtitle {
+  max-width: 760px;
+  margin: 0 0 18px;
+  color: #475569;
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.ext-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 18px;
+  border-bottom: 1px solid #dce5ef;
+}
+
+.ext-tab {
+  min-height: 36px;
+  margin: 0 0 -1px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.ext-tab:hover,
+.ext-tab.active {
+  color: #0b4fef;
+  border-bottom-color: #0b4fef;
+}
+
+.ext-pane {
+  display: none;
+}
+
+.ext-pane.active {
+  display: block;
+}
+
+.ext-overview {
+  max-width: 820px;
+}
+
+.ext-note {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.ext-note + .ext-note {
+  margin-top: 20px;
+}
+
+.ext-note h5 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.ext-note p,
+.ext-note li {
+  color: #475569;
+  font-size: 0.93rem;
+  line-height: 1.58;
+}
+
+.ext-note p {
+  margin: 0 0 10px;
+}
+
+.ext-note ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+
+.ext-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.ext-span {
+  grid-column: 1 / -1;
+}
+
+.ext-label {
+  margin: 0 0 5px;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ext-input {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #cbd5df;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.ext-input:focus {
+  border-color: #0b4fef;
+  outline: 2px solid #bfdbfe;
+  outline-offset: 1px;
+}
+
+.ext-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ext-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 16px;
+  background: #0b4fef;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.ext-btn:hover {
+  background: #093fc0;
+}
+
+.ext-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ext-btn.secondary {
+  border: 1px solid #cbd5df;
+  background: #ffffff;
+  color: #334155;
+}
+
+.ext-btn.secondary:hover {
+  background: #f8fafc;
+}
+
+.ext-status {
+  min-height: 18px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+}
+
+.ext-status.ok {
+  color: #0b4fef;
+  font-weight: 700;
+}
+
+.ext-status.err {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.ext-hint {
+  margin: 6px 0 12px;
+  color: #64748b;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.ext-gap {
+  margin-top: 12px !important;
+}
+
+.ext-results {
+  margin-top: 14px;
+  border: 1px solid #dce5ef;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  overflow-x: auto;
+}
+
+.ext-results pre {
+  margin: 0;
+  color: #1f2937;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ext-notice {
+  margin: 0 0 12px;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #f0f9ff;
+  color: #0f172a;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.ext-error-title {
+  color: #991b1b;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.ext-error-copy {
+  margin: 6px 0 0;
+  color: #7f1d1d;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.ext-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ext-stat {
+  min-width: 84px;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #eff6ff;
+}

@@ -1,0 +1,70 @@
+.services-row {
+  display: grid;
+  grid-template-columns: repeat(2, 15rem);
+  gap: 1rem;
+  align-items: start;
+  justify-content: start;
+}
+
+.page-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 4rem;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.docs-page {
+  padding: 3rem 0;
+  color: #0f172a;
+}
+
+.docs-page h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.docs-page p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #263241;
+}
+
+.service-card {
+  border-radius: 0.7rem;
+  overflow: hidden;
+  box-shadow: 0 0.6rem 1.8rem rgba(15,23,42,0.06);
+  display: flex;
+  padding: 1.1rem;
+  flex-direction: column;
+  background: #fff;
+  width: 14rem;
+  height: 14rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.service-card .q-card__section {
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.service-card h4 {
+  font-size: 1.25rem;
+  margin: 0 0 0.125rem 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+.service-card p {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #475569;
+  text-align: center;
+}

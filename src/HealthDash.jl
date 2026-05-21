@@ -1,56 +1,53 @@
 module HealthDash
 
-# load the Genie environment first so that all other modules can be properly initialized
+# Load the Genie environment before the app module initializes.
 module GenieEnvLoader
     using Genie, Dates
+
     t_startup::DateTime = DateTime(0)
-        
+
     function __init__()
         global t_startup = now()
         cd(@project_path)
         Genie.config.path_build = @project_path "build"
         Genie.Loader.loadenv(; context = @__MODULE__)
-        up()
     end
 end
 
 import .GenieEnvLoader.t_startup
 
-using Stipple.ModelStorage.Sessions.GenieSession
-using Stipple, Stipple.ReactiveTools
-using StippleUI
-using DBInterface
-import DBInterface: connect, close!, execute
-using DataFrames
 using Dates
-HTTP::Module = Genie.HTTPUtils.HTTP
+using Stipple, Stipple.ReactiveTools
+using Stipple.ModelStorage.Sessions.GenieSession
+using StippleUI
 
 include(joinpath(@__DIR__, "components", "Navbar.jl"))
 include(joinpath(@__DIR__, "extensions", "registry.jl"))
-include(joinpath(@__DIR__, "extensions", "Vitals", "VitalsExtension.jl"))
-include(joinpath(@__DIR__, "extensions", "Labs", "LabsExtension.jl"))
+include(joinpath(@__DIR__, "extensions", "helpers.jl"))
+include(joinpath(@__DIR__, "extensions", "Template", "Template.jl"))
 include(joinpath(@__DIR__, "data", "services.jl"))
 include(joinpath(@__DIR__, "pages", "Docs.jl"))
 include(joinpath(@__DIR__, "pages", "Dashboard.jl"))
-import Stipple: opts, hget
-import Genie.Renderer.Html: select
-import Genie.Router.Route
-import Genie.Generator.Logging
+
 import Genie.Assets.asset_path
+import Genie.Renderer.Json: json
+import Genie.Requests: getpayload
+import Genie.Router.Route
+import Genie.Router: params
 import Genie.Server.openbrowser
 import Genie.Util: @wait
 
 export openbrowser, @wait
-register_extension(ExtensionRegistry("vitals", "Vitals Dashboard", "Quick overview of patient vitals", VitalsExtension.vitals_ui))
-register_extension(ExtensionRegistry("labs", "Labs Report", "Recent lab results summary", LabsExtension.labs_ui))
 
+register_extension(ExtensionRegistry(
+    "template",
+    "Template",
+    "Starter module for package authors.",
+    TemplateExtension.template_ui,
+))
 
 @app MyApp begin
-    @in x = 1.0
-    @in search = ""
-    @in storage = 0.26
-  @in selected_service = ""
-  @in selected_dashboard_item = ""
+    @in selected_dashboard_item = "template"
 
     @onchange isready begin
         global t_startup
@@ -61,290 +58,85 @@ register_extension(ExtensionRegistry("labs", "Labs Report", "Recent lab results 
             t_startup = DateTime(0)
         end
     end
-
-    @onchange x begin
-        global hh
-        println(x)
-        y = parse(Int, "0" * GenieSession.get(hh, :hh)[4:end]) + 1
-        GenieSession.persist(GenieSession.set!(hh, :hh, "hh_$y"))
-    end
-
-  end 
-
-# function myheader()
-#     header(elevated = "", class = "bg-white text-grey-8", var"height-hint" = "64", 
-#         toolbar(class = "GPL__toolbar", style = "height: 64px", [
-#             btn(flat = "", dense = "", round = "", @click("toggleLeftDrawer"), var"aria-label" = "Menu", icon = "menu", class = "q-mx-md"),
-#             toolbartitle(@if("\$q.screen.gt.sm"), shrink = "", class = "row items-center no-wrap", [
-#                 img(src = "https://cdn.quasar.dev/img/layout-gallery/logo-google.svg"),
-#                 span(class = "q-ml-sm", 
-#                     "Photos"
-#                 )
-#             ]),
-#             space(),
-#             textfield("", :search, class = "GPL__toolbar-input", dense = "", standout = "bg-primary", placeholder = "Search", [
-#                 template(var"v-slot:prepend" = "", [
-#                     icon("search", @if("search === ''")),
-#                     icon("clear", @else(), class = "cursor-pointer", @click("search = ''"))
-#                 ])
-#             ]),
-#             btn("Create", @if("\$q.screen.gt.xs"), flat = "", dense = "", nowrap = "", color = "primary", icon = "add", nocaps = "", class = "q-ml-sm q-px-md", [
-#                 menu(anchor = "top end", self = "top end", 
-#                     list(class = "text-grey-8", style = "min-width: 100px", [
-#                         item(var"aria-hidden" = "true", 
-#                             itemsection(class = "text-uppercase text-grey-7", style = "font-size: 0.7rem", 
-#                                 "Create New"
-#                             )
-#                         ),
-#                         item(@for("menu in createMenu"), key = R"menu.text", clickable = "", vclosepopup = "", var"aria-hidden" = "true", [
-#                             itemsection(avatar = "", 
-#                                 icon(R"menu.icon")
-#                             ),
-#                             itemsection(
-#                                 "{{ menu.text }}"
-#                             )
-#                         ])
-#                     ])
-#                 )
-#             ]),
-#             btn("Upload", @if("\$q.screen.gt.xs"), flat = "", dense = "", nowrap = "", color = "primary", icon = "cloud_upload", nocaps = "", class = "q-ml-sm q-px-md"),
-#             space(),
-#             htmldiv(class = "q-gutter-sm row items-center no-wrap", [
-#                 btn(round = "", dense = "", flat = "", color = "text-grey-7", icon = "apps", [
-#                     tooltip("Google Apps")
-#                 ]),
-#                 btn(round = "", dense = "", flat = "", color = "grey-8", icon = "notifications", [
-#                     badge(color = "red", textcolor = "white", floating = "", "2"),
-#                     tooltip("Notifications")
-#                 ]),
-#                 btn(round = "", flat = "", [
-#                     avatar(size = "26px", img(src = "https://cdn.quasar.dev/img/boy-avatar.png")),
-#                     tooltip("Account"
-#                     )
-#                 ])
-#             ])
-#         ])
-#     )
-# end
-
-# function mydrawer()
-#     drawer(fieldname = "leftDrawerOpen", bordered = "", behavior = "mobile", @click("leftDrawerOpen = false"), 
-#         scrollarea(class = "fit", [
-#             toolbar(class = "GPL__toolbar", 
-#                 toolbartitle(class = "row items-center text-grey-8", [
-#                     img(class = "q-pl-md", src = "https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_clr_74x24px.svg"),
-#                     span(class = "q-ml-sm", "Photos")
-#                 ])
-#             ),
-#             list(padding = "", [
-#                 item(@for("link in links1"), key = R"link.text", clickable = "", class = "GPL__drawer-item", [
-#                     itemsection(avatar = "", icon(R"link.icon")),
-#                     itemsection(itemlabel("{{ link.text }}"))
-#                 ]),
-#                 separator(class = "q-my-md"),
-#                 item(@for("link in links2"), key = R"link.text", clickable = "", class = "GPL__drawer-item", [
-#                     itemsection(avatar = "", icon(R"link.icon")),
-#                     itemsection(itemlabel("{{ link.text }}"))
-#                 ]),
-#                 separator(class = "q-my-md"),
-#                 item(@for("link in links3"), key = R"link.text", clickable = "", class = "GPL__drawer-item", [
-#                     itemsection(avatar = "", icon(R"link.icon")),
-#                     itemsection(itemlabel("{{ link.text }}"))
-#                 ]),
-#                 separator(class = "q-my-md"),
-#                 item(clickable = "", class = "GPL__drawer-item GPL__drawer-item--storage", [
-#                     itemsection(avatar = "", icon("cloud")),
-#                     itemsection(top = "", [
-#                         itemlabel("Storage"),
-#                         quasar(:linear__progress, value = :storage, class = "q-my-sm"),
-#                         itemlabel(caption = "", "2.6 GB of 15 GB")
-#                     ])
-#                 ])
-#             ])
-#         ])
-#     )
-# end
-
-# function leftMenu()
-#     page_sticky(@if("\$q.screen.gt.sm"), class = "q-mt-xl", expand = "", position = "left", 
-#         htmldiv(class = "fit q-pt-md q-px-sm column", [
-#             btn(round = "", flat = "", color = "grey-8", stacked = "", nocaps = "", size = "26px", class = "GPL__side-btn", [
-#                 icon("photo", size = "22px"),
-#                 htmldiv(class = "GPL__side-btn__label", 
-#                     "Photos"
-#                 )
-#             ]),
-#             btn(round = "", flat = "", color = "grey-8", stacked = "", nocaps = "", size = "26px", class = "GPL__side-btn", [
-#                 icon("collections_bookmark", size = "22px"),
-#                 htmldiv(class = "GPL__side-btn__label", 
-#                     "Albums"
-#                 )
-#             ]),
-#             btn(round = "", flat = "", color = "grey-8", stacked = "", nocaps = "", size = "26px", class = "GPL__side-btn", [
-#                 icon("assistant", size = "22px"),
-#                 htmldiv(class = "GPL__side-btn__label", 
-#                     "Assistant"
-#                 ),
-#                 badge(floating = "", color = "red", textcolor = "white", style = "top: 8px; right: 16px", 
-#                     "1"
-#                 )
-#             ]),
-#             btn(round = "", flat = "", color = "grey-8", stacked = "", nocaps = "", size = "26px", class = "GPL__side-btn", [
-#                 icon("group", size = "22px"),
-#                 htmldiv(class = "GPL__side-btn__label", 
-#                     "Sharing"
-#                 )
-#             ]),
-#             btn(round = "", flat = "", color = "grey-8", stacked = "", nocaps = "", size = "26px", class = "GPL__side-btn", [
-#                 icon("import_contacts", size = "22px"),
-#                 htmldiv(class = "GPL__side-btn__label", 
-#                     "Photo books"
-#                 )
-#             ])
-#         ])
-#     )
-# end
-
-UI::Vector{Genie.Renderer.Html.ParsedHTMLString} = docs_page()
-
-@methods MyApp [
-    :toggleLeftDrawer => js"""function () {
-        this.leftDrawerOpen = !this.leftDrawerOpen
-    }
-    """
-]
-
-Stipple.client_data(::MyApp) = client_data(
-    leftDrawerOpen = false,
-    links1 = [
-        opts(icon = "photo", text = "Photos"),
-        opts(icon = "photo_album", text = "Albums"),
-        opts(icon = "assistant", text = "Assistant"),
-        opts(icon = "people", text = "Sharing"),
-        opts(icon = "book", text = "Photo books")
-    ],
-    links2 = [
-        opts(icon = "archive", text = "Archive"),
-        opts(icon = "delete", text = "Trash")
-    ],
-    links3 = [
-        opts(icon = "settings", text = "Settings"),
-        opts(icon = "help", text = "Help"),
-        opts(icon = "get_app", text = "App Downloads")
-    ],
-    createMenu = [
-        opts(icon = "photo_album", text = "Album"),
-        opts(icon = "people", text = "Shared"),
-        opts(icon = "movie", text = "Movie"),
-        opts(icon = "library_books", text = "Animation"),
-        opts(icon = "dashboard", text = "Collage"),
-        opts(icon = "book", text = "Photo books")
-    ]
-)
+end
 
 local_material_fonts() = (stylesheet("/iconsets/material/font/material.css"),)
 navbar_css() = (stylesheet("/css/navbar.css"),)
-pages_css() = (stylesheet("/css/pages.css"),)
+docs_css() = (stylesheet("/css/docs.css"),)
+dashboard_css() = (stylesheet("/css/dashboard.css"),)
+extensions_css() = (stylesheet("/css/extensions/extensions.css"),)
 
-# add_css(googlefonts_css)
-add_css(local_material_fonts)
-ui() = UI
+function render_app(content)
+    global hh = session()
+    core_theme = false
+    global model = @init(MyApp; core_theme)
+    GenieSession.set!(session(), :hh, "hh")
+    return page(model, content; core_theme) |> html
+end
 
 home::Route = route("/") do
-  global hh = session()
-  core_theme = false
-  global model = @init(MyApp; core_theme)
-  GenieSession.set!(session(), :hh, "hh")
-  page(model, docs_page(); core_theme) |> html
+    render_app(docs_page())
 end
 
 docs::Route = route("/docs") do
-  global hh = session()
-  core_theme = false
-  global model = @init(MyApp; core_theme)
-  GenieSession.set!(session(), :hh, "hh")
-  page(model, docs_page(); core_theme) |> html
+    render_app(docs_page())
 end
 
 dashboard::Route = route("/dashboard") do
-  global hh = session()
-  core_theme = false
-  global model = @init(MyApp; core_theme)
-  GenieSession.set!(session(), :hh, "hh")
-  page(model, dashboard_page(); core_theme) |> html
+    render_app(dashboard_page())
 end
 
-gpl_css() = [style("""
-.GPL__toolbar {
-  height: 64px;
-}
+function request_kwargs()
+    payload = getpayload()
+    isempty(payload) && return (;)
 
-.GPL__toolbar-input {
-  width: 35%;
-}
+    pairs = Pair{Symbol, Any}[]
+    for (key, value) in payload
+        push!(pairs, Symbol(key) => value)
+    end
+    return (; pairs...)
+end
 
-.GPL__drawer-item {
-  line-height: 24px;
-  border-radius: 0 24px 24px 0;
-  margin-right: 12px;
-}
+modules_api::Route = route("/api/modules") do
+    json(Dict("modules" => list_extension_manifests()))
+end
 
-.GPL__drawer-item .q-item__section--avatar {
-  padding-left: 12px;
-}
+modules_run::Route = route("/api/modules/run/:id") do
+    id = string(params(:id))
+    ext = get_extension(id)
 
-.GPL__drawer-item .q-item__section--avatar .q-icon {
-  color: #5f6368;
-}
+    ext === nothing && return json(Dict("error" => "Unknown module", "id" => id))
+    ext.run === nothing && return json(Dict("error" => "Module has no run handler", "id" => id))
 
-.GPL__drawer-item .q-item__label:not(.q-item__label--caption) {
-  color: #3c4043;
-  letter-spacing: .01785714em;
-  font-size: .875rem;
-  font-weight: 500;
-  line-height: 1.25rem;
-}
-
-.GPL__drawer-item--storage {
-  border-radius: 0;
-  margin-right: 0;
-  padding-top: 24px;
-  padding-bottom: 24px;
-}
-
-.GPL__side-btn__label {
-  font-size: 12px;
-  line-height: 24px;
-  letter-spacing: .01785714em;
-  font-weight: 500;
-}
-
-@media (min-width: 1024px) {
-  .GPL__page-container {
-    padding-left: 94px;
-  }
-}""")
-]
-
-# -----------  app init -------------
+    try
+        result = ext.run(; request_kwargs()...)
+        json(Dict("id" => id, "result" => result))
+    catch err
+        json(Dict(
+            "id" => id,
+            "error" => "Module run failed",
+            "details" => sprint(showerror, err),
+        ))
+    end
+end
 
 function __init__()
-    add_css(gpl_css)
     add_css(local_material_fonts)
     add_css(navbar_css)
-    add_css(pages_css)
+    add_css(docs_css)
+    add_css(dashboard_css)
+    add_css(extensions_css)
 
     route(home)
     route(docs)
     route(dashboard)
+    route(modules_api)
+    route(modules_run)
 
-    "openbrowser" ∈ ARGS && openbrowser()
-    @wait # seemed to interfere with GenieSession, but couldn't be reproduced with the latest version
+    up()
+
+    "openbrowser" in ARGS && openbrowser()
 end
-
-# -----------  precompilation -------------
-
-import Stipple: Genie.Assets.asset_path
 
 @stipple_precompile begin
     println("Precompiling app...")
@@ -358,9 +150,7 @@ import Stipple: Genie.Assets.asset_path
 
     @init(MyApp; core_theme = false)
     route(home)
-    # this has to be called in order to initialize the assets
     precompile_get("/")
-    # now we can call the assetfile
     precompile_get(asset_path(MyApp))
     precompile_get(asset_path(StippleUI.assets_config, :css, file = "quasar.prod"))
 end

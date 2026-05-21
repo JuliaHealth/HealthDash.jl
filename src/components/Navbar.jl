@@ -2,7 +2,7 @@ function navbar()
 	return row(class="hd-navbar", [
 		cell(class="hd-navbar-inner row items-center no-wrap", [
 			cell(class="col-auto hd-navbar-left", [
-				h1("HealthDash", class="hd-logo")
+				h4("HealthDash", class="hd-logo")
 			]),
 
 			cell(class="col navbar-center", [

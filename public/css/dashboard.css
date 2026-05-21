@@ -1,0 +1,73 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #0f172a;
+}
+
+.dashboard-frame {
+  display: flex;
+  min-height: calc(100vh - 80px);
+  background: #fff;
+  overflow: hidden;
+}
+
+.dashboard-rail {
+  width: 20rem;
+  border-right: 1px solid #e6eef8;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (max-width: 880px) {
+  .dashboard-frame {
+    flex-direction: column;
+  }
+
+  .dashboard-rail {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e6eef8;
+  }
+}
+
+.rail-section {
+  width: 100%;
+}
+
+.rail-item {
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rail-item:hover {
+  color: #0b4fef;
+  background: rgba(11,79,239,0.06);
+}
+
+.rail-item.active {
+  color: #0b4fef;
+  background: rgba(11,79,239,0.08);
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 #0b4fef;
+}
+
+.rail-divider {
+  height: 1px;
+  background: #e6eef8;
+  margin: 0.5rem 0;
+  width: 100%;
+}
+
+.dashboard-content {
+  flex: 1;
+  background: #ffffff;
+  overflow-y: auto;
+}
