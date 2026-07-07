@@ -1,113 +1,63 @@
 # Design Plan
 
-## High-level goals
+This describes how HealthDash is built today, followed by ideas we haven't
+implemented yet.
 
-- Single dashboard app that can load one active dataset (choose a built-in example or upload), then let users run any available modules on it (pre-cohort, post-cohort, visualizations).
+## Goals
 
-- Keep the UI modular (reusable Stipple components) and the backend extensible.
+- One dashboard where JuliaHealth packages can surface their tools, instead
+  of each shipping a standalone app.
+- Keep the core small. Almost everything on the dashboard comes from
+  **extensions** - self-contained modules that register themselves.
+- Adding an extension should never require touching the core app.
 
-- Default developer-friendly path: local Julia packages (plugins) that can register new modules or capabilities.
+## How it works today
 
-- Each functional part (like dataset management, cohort handling, or visualizations) is treated as a module, making it easy to add, update, or reuse features.
+### Extensions
 
-The design assumes a single-dashboard app for now, with the backend and UI in one codebase, but it’s modular enough to expand into external APIs later if needed.
+An extension is a folder under `src/extensions/` with a same-named `.jl`
+file, e.g. `src/extensions/MyProject/MyProject.jl`. That file defines a
+module and calls `register_extension(...)` at the bottom. On startup the
+loader (`src/extensions/loader.jl`) includes every such folder
+automatically, so no core file has to change.
 
-## Frontend
+Each registration provides:
 
-Design principle: a small set of reusable components that compose pages.
+- `id` - unique id used in the UI state,
+- `name` - shown in the sidebar and on the home cards,
+- `description` - shown on the home cards and in `/api/modules`,
+- `ui_component` - a function returning the UI to render,
+- `source_module` - lets the docs site autodoc the extension.
 
-Pages
+The two extensions today are `Template` (a starter example) and
+`OMOPCommonDataModel` (an explorer over OMOPCommonDataModel.jl).
 
-- Landing `/` - shows all the current available modules
-- Dashboard `/dashboard` - dashboard with functionality
-- Docs `/docs` - documentation, about the page, juliahealth and links
-  Pages themselves could be made reusable so contributors can add additional pages if needed.
+### Pages
 
-Core components
+- `/` - home. A hero and a grid of service cards.
+- `/dashboard` - a sidebar of services and the selected service's UI.
+- `/api/modules` - JSON list of the registered services, for external tooling.
 
-- NavBar
-- SidePanel / Sidebar
-- DatasetUploader / DatasetChooser (based on user choice)
-- CohortBuilder / CohortSelector
-- Microservice Selector
-- Visualizations
-- Microservice functionality
-- Preview Tables...etc
+Shared pieces live in `src/components/` (the navbar) and
+`src/extensions/helpers.jl` (small UI helpers).
 
-Components like Visualizations or CohortSelector can work directly with standardized data formats (such as HealthTable) to make modules interoperable.
+### Interactivity
 
-### Data sources
+The dashboard is a Stipple app, so extensions can be static or interactive
+using Vue directives bound to the app's reactive state. Switching services
+(`selected_dashboard_item`) and picking an OMOP table
+(`omop_selected_table`) both happen client-side with `@click`, `v-model`
+and `v-show`, so nothing reloads the page.
 
-Support 2 simple ingestion modes (for now).
+## Ideas for later
 
-1. Built‑in datasets
+These are not built yet - they're the direction we might grow in.
 
-   - Ship a small set of example datasets (e.g. Eunomia)
-   - Appear in the DatasetChooser as "built‑in" items and can be activated immediately
-   - Note: HealthSampleData.jl will also be registered soon, which helps with preloaded datasets.
-
-2. Database uploader / connector
-   - Allow users to upload a database / connect maybe ?!
-     - Supported examples: DuckDB, SQLite (and optionally Postgres or other SQL sources).
-   - Modes:
-     - Upload mode: directly upload the db
-     - Query mode: for connect based (not sure how to navigate for this yet)
-     Note: databases can be large, so efficient handling is important.
-   - Considerations:
-     - Databases can be large, so uploading may not always work; connection mode may be needed.
-     - For complex queries or analytics, it may be better to preprocess statistics externally and just visualize them in the dashboard.
-     - We can leverage DBInterface.jl since much of the tooling is built around FunSQL.jl, which helps with connecting/querying databases efficiently.
-
-### Cohort table detection and handling
-
-- Detect whether the registered dataset or DB already contains a cohort table (by naming convention or schema).
-  - If a cohort table exists:
-    - Offer to "Use existing cohorts" (select `cohort_definition_id`) and run modules keyed to that id.
-  - If no cohort table exists, provide two lightweight options:
-    - Ephemeral cohorts: CohortBuilder produces an inline filter and sends it to the microservice run call. (maybe add a button "save cohort" to save)
-    - Temporary cohorts: create a temporary cohort table in app DuckDB for repeated use in the session (could drop on unload or replacement).
-
-The dashboard itself coordinates these tasks, but processing logic remains modular. Statistics can be precomputed externally, and visualization modules can simply consume results, avoiding locking processing methods into the UI.
-
-## Backend
-
-Goals:
-
-- Support dataset lifecycle (upload, list, preview, activate, delete).
-- Let the frontend discover and run available modules on the active dataset.
-- Manage cohorts (detect, create ephemeral or temporary ones).
-- Use DuckDB as the default runtime for dataset handling and lightweight storage.
-- Keep the backend modular: new modules can register themselves dynamically.
-
-The backend will run as part of the dashboard itself. Internal routes like /api/modules/run are designed to organize workflow and keep the app self-contained, while remaining future-ready if APIs are exposed later.
-
-### Minimal Plan
-
-#### /api/datasets (Dataset Lifecycle)
-
-- `GET /api/datasets` - List all datasets and show which one is active.
-- `POST /api/datasets` - Upload or connect to a dataset (CSV, Parquet, DuckDB, SQLite).
-- `GET /api/datasets/:id/preview` - Preview sample rows and schema.
-- `POST /api/datasets/:id/activate` - Mark a dataset as active for the current session.
-- `DELETE /api/datasets/:id` - (Optional) Remove uploaded dataset from storage.
-
-#### /api/cohorts (Cohort Lifecycle)
-
-- `GET /api/cohorts/detect` - Check if the active dataset contains any cohort tables.
-- `POST /api/cohorts/ephemeral` - Create a quick in-memory (inline filter) cohort.
-- `POST /api/cohorts/create_temp` - Generate a temporary cohort table for reuse in the session.
-- `POST /api/cohorts/use` - Select an existing cohort definition from the dataset.
-
-#### /api/modules (Module Discovery + Execution)
-
-- `GET /api/modules` - Return list of available modules with brief descriptions and required inputs.
-- `POST /api/modules/run` - Run a chosen module on the active dataset (and cohort, if any). Returns results or job info.
-
-Internal APIs allow modular handling of datasets, cohorts and modules, keeping the dashboard flexible and organized.
-
-### How it maps to frontend
-
-- Landing Page (modules): -> `GET /api/modules`
-- DatasetUploader / Chooser: -> `POST /api/datasets` (upload), `GET /api/datasets` (list), `POST /api/datasets/:id/activate` (select)
-- Cohort Builder / Selector: -> `GET /api/cohorts/detect`, `POST /api/cohorts/*` (create/use cohorts)
-- Dashboard Visuals: -> `POST /api/modules/run` (receive result JSON and render charts/tables)
+- **Datasets**: load a built-in example (e.g. via HealthSampleData.jl) or
+  connect to a DuckDB/SQLite/Postgres source, then preview and activate it.
+- **Cohorts**: detect existing cohort tables, or build ephemeral/temporary
+  ones for a session (leaning on FunSQL.jl / DBInterface.jl).
+- **Server-side work**: let an extension run computation and return results
+  for the UI to visualize, rather than only rendering static or reflected
+  data. Heavy processing would stay outside the dashboard; the UI would just
+  visualize the results.
